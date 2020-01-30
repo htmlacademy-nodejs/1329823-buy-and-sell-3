@@ -1,7 +1,6 @@
-;
 'use strict';
 
-const {Cli} = require(`./cli`);
+const {Cli} = require(`../service/cli`);
 const {
     DEFAULT_COMMAND,
     USER_ARGV_INDEX,
@@ -9,14 +8,11 @@ const {
 } = require(`../constants`);
 
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
-const [userCommand,userItemCount] = userArguments;
+const [userCommand] = userArguments;
 
 if (userArguments.length ===0 || !Cli[userCommand]){
     Cli[DEFAULT_COMMAND].run();
     process.exit(ExitCode.success);
 }
-if (userItemCount>1000){
-    console.info(`Не больше 1000 объявлений`);
-    process.exit(ExitCode.error);
-}
-Cli[userCommand].run(userItemCount);
+
+Cli[userCommand].run(userArguments.slice(1));

@@ -1,16 +1,46 @@
-;
 'use strict';
 
-module.exports.getRendomInt = (min,max) => {
-    min=Math.ceil(min);
-    max=Math.ceil(max);
+const fs = require(`fs`);
+const { TITLES,
+        CATEGORIES,
+        SENTENCES, 
+        OfferType, 
+        SumRestrict, 
+        PictureRestrict} = require(`./date`);
+
+const getReandomInt = (min,max) => {
+    min = Math.ceil(min);
+    max = Math.ceil(max);
     return Math.floor(Math.random()*(max-min+1))+min;
 };
 
-module.exports.shuffle = (someArray) => {
-    for (let i=someArray.length -1; i>0; i--){
-        const randomPosition = Math.floor(Math.random()*i);
-        [someArray[i],someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
+const shuffle = (array) => {
+    for (let index = array.length -1;index>0;index--){
+        const randomPos = Math.floor(Math.random()*index);
+        [array[index],array[randomPos]] = [array[randomPos], array[index]];
     }
-    return someArray;
+    return array;
 };
+const getPicFileName = (number) => `item${number<10?`0${number}`:number}.jpg}`;
+const generateOffers = (count) => (
+    Array(count).fill({}).map( () => (
+        {
+            title: TITLES[getReandomInt(0,TITLES.length-1)],
+            picture: getPicFileName(getReandomInt(PictureRestrict.min,PictureRestrict.max)),
+            description: shuffle(SENTENCES).slice(1,5).join(` `),
+            type: Object.keys(OfferType)[Math.floor(Math.random()*Object.keys(OfferType).length)],
+            sum: getReandomInt(SumRestrict.min,SumRestrict.max),
+            category: [CATEGORIES[getReandomInt(0,CATEGORIES.length-1)]],
+        }))
+);
+
+const makeMock = (filename,data) => {
+    fs.writeFileSync(filename,data,(err) =>{
+        if (err){
+            console.error(`Не удалось записать данные в файл`);
+        }
+        console.log(`Файл записан!`);
+    });
+};
+
+module.exports = {getReandomInt, shuffle, getPicFileName, generateOffers,makeMock};
