@@ -6,7 +6,7 @@ const { TITLES,
         SENTENCES, 
         OfferType, 
         SumRestrict, 
-        PictureRestrict} = require(`./date`);
+        PictureRestrict} = require(`./data`);
 
 const getReandomInt = (min,max) => {
     min = Math.ceil(min);
@@ -33,14 +33,5 @@ const generateOffers = (count) => (
             category: [CATEGORIES[getReandomInt(0,CATEGORIES.length-1)]],
         }))
 );
-
-const makeMock = (filename,data) => {
-    fs.writeFileSync(filename,data,(err) =>{
-        if (err){
-            console.error(`Не удалось записать данные в файл`);
-        }
-        console.log(`Файл записан!`);
-    });
-};
 
 module.exports = {getReandomInt, shuffle, getPicFileName, generateOffers,makeMock};
