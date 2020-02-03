@@ -34,4 +34,14 @@ const generateOffers = (count) => (
         }))
 );
 
+const makeMock = (data) => { 
+    const FILE_NAME = `mocks.json`;
+    fs.writeFileSync(FILE_NAME,data,(err) =>{
+        if (err){ 
+            console.error(`Не удалось записать данные в файл`); 
+        }
+        console.log(`Файл записан!`); 
+    });
+};
+
 module.exports = {getReandomInt, shuffle, getPicFileName, generateOffers,makeMock};
