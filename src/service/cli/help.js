@@ -3,9 +3,9 @@
 const chalk = require(`chalk`);
 
 module.exports = {
-    name: `--help`,
-    run() {
-        const text = `
+  name: `--help`,
+  run() {
+    const text = `
     Программа запускает http-сервер и формирует файл с данными для api.
     Гайд:
     server <command>
@@ -13,6 +13,6 @@ module.exports = {
         --version:            выводит номер версии
         --help:               печатает этот текст
         --generate <count>    формирует файл mocks.json`;
-        console.log(chalk.gray(text));
-    }
+    console.log(chalk.gray(text));
+  }
 };
