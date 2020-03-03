@@ -13,7 +13,8 @@ module.exports = {
         --version:            выводит номер версии
         --help:               печатает этот текст
         --generate <count>    формирует файл mocks.json
-        --server <port>       запускает сервер по заданному порту`;
+        --server <port>       запускает сервер по заданному порту
+        --router              запускает сервер с маршрутизацией по порту 8080`;
 
     console.log(chalk.gray(text));
   }
