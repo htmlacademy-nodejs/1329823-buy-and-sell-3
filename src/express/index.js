@@ -2,19 +2,15 @@
 
 const express = require(`express`);
 const chalk = require(`chalk`);
-const mainRouter = require(`./routes/main`);
-const myRouter = require(`./routes/my`);
-const offersRouter = require(`./routes/offers`);
+const router = require(`./routes/index`);
 
 const DEFAULT_PORT = 8080;
+const app = express();
 
 module.exports = {
   name: `--router`,
   run() {
-    const app = express();
-    app.use(`/my`, myRouter);
-    app.use(`/offers`, offersRouter);
-    app.use(`/`, mainRouter);
+    app.use(router);
     app.listen(DEFAULT_PORT,
         () => console.log(chalk.green(`Server of start: ${DEFAULT_PORT}`)));
   },
