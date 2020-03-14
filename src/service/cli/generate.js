@@ -1,12 +1,12 @@
 'use strict';
 
-const { ExitCode } = require(`../../constants`);
+const { ExitCode, MOCK_FILE_NAME } = require(`../../constants`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const { getReandomInt, shuffle } = require(`../cli/utils`);
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
-const FILE_NAME = `mocks.json`;
+//const FILE_NAME = `mocks.json`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
@@ -70,7 +70,7 @@ module.exports = {
       const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences));
 
       try {
-          await fs.writeFile(FILE_NAME, content);
+          await fs.writeFile(MOCK_FILE_NAME, content);
           console.log(chalk.green(`File recorded!`));
           process.exit(ExitCode.success);
       }
