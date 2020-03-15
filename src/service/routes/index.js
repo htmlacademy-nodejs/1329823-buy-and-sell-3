@@ -1,9 +1,9 @@
 'use strict';
 
-const offersRoutes = require(`./offers`);
+const offersRouter = require(`./offers`);
+const {Router} = require(`express`);
+const initRoutes = new Router();
 
-const initRoutes = (app) => {
-  app.use(`/offers`, offersRoutes);
-};
+initRoutes.use(`/offers`, offersRouter);
 
-module.exports = {initRoutes};
+module.exports = initRoutes;
