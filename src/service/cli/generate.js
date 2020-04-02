@@ -4,7 +4,7 @@ const { ExitCode, MOCK_FILE_NAME } = require(`../../constants`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const nanoid = require(`nanoid`);
-const { getReandomInt, shuffle} = require(`./utils`);
+const { getReandomInt, shuffle, getNewId} = require(`./utils`);
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
@@ -28,8 +28,8 @@ const getPictureRestrict = {
 };
 
 const getComments = (count, comments) => {
-  Array (count).fill({}).map(() => ({
-    id: 123, //nanoid(6),
+  return Array (count).fill({}).map(() => ({
+    id: getNewId(),
     text: shuffle(comments).slice(0, getReandomInt(0, 8)).join(` `),
   }));
 };
@@ -39,7 +39,7 @@ const getPicFileName = (number) => `item${number < 10 ? `0${number}` : number}.j
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => (
       {
-        id: 11233, ///nanoid(),
+        id: getNewId(),
         title: titles[getReandomInt(0, titles.length - 1)],
         picture: getPicFileName(getReandomInt(getPictureRestrict.MIN, getPictureRestrict.MAX)),
         description: shuffle(sentences).slice(1, 5).join(` `),
