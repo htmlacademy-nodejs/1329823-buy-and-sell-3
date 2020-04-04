@@ -1,24 +1,14 @@
 'use strict';
 
 const fs = require(`fs`).promises;
-const chalk = require(`chalk`);
 const FILE_CATEGORIES_PATH = `data/categories.txt`;
 const {Router} = require(`express`);
 const categoryRouter = new Router();
 
-const readMocks = async () => {
-  try {
-    const file = await fs.readFile(FILE_CATEGORIES_PATH, `utf8`);
-    const mocks = file.split(`\n`);
-    return mocks;
-  } catch (err) {
-    return [];
-  }
-};
+const readMocks = async (path) => (await fs.readFile(path)).toString().trim().split(`/n`);
 
 categoryRouter.get(`/`, async (req, res) => {
-  const categories = await readMocks();
-  return res.send(categories);
+  res.json(await readMocks(FILE_CATEGORIES_PATH));
 });
 
 module.exports = categoryRouter;

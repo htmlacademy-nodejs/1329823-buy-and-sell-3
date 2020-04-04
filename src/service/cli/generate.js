@@ -3,7 +3,6 @@
 const { ExitCode, MOCK_FILE_NAME } = require(`../../constants`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const nanoid = require(`nanoid`);
 const { getReandomInt, shuffle, getNewId} = require(`./utils`);
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
@@ -84,8 +83,7 @@ module.exports = {
           await fs.writeFile(MOCK_FILE_NAME, content);
           console.log(chalk.green(`File recorded!`));
           process.exit(ExitCode.success);
-      }
-      catch {
+      } catch {
           console.error(chalk.red(`Error writing file`));
           process.exit(ExitCode.error);
       }

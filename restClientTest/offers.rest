@@ -1,0 +1,39 @@
+
+GET http://localhost:3000/api/offers HTTP/1.1 
+Content-Type: application/json
+
+####
+POST http://localhost:3000/api/offers HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": "OOOOO1", 
+    "type": "sale", 
+    "title": "Куплю удочку.", 
+    "description": ["Кажется, что это хрупкая вещь."], 
+    "sum": 1000, 
+    "picture": "item05.jpg", 
+    "category": ["Животные", "Разное", "Игры"], 
+    "comments": [
+        {
+            "id": "ААААА1", 
+            "text": ["Продаю в связи с переездом. Отрываю от сердца."]
+        }, 
+        {
+            "id": "ААААА2", 
+            "text": ["Неплохо, но дорого", "Вы что?! В магазине дешевле.",]
+        }
+    ]
+}
+
+###
+DELETE http://localhost:3000/api/offers/OOOOO1 HTTP/1.1 
+Content-Type: application/json
+
+###
+GET http://localhost:3000/api/offers/7J32vb HTTP/1.1 
+Content-Type: application/json
+
+###
+PUT http://localhost:3000/api/offers/7J32vb HTTP/1.1 
+Content-Type: application/json
