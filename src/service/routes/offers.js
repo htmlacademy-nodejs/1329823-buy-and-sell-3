@@ -24,19 +24,17 @@ offersRouter.get(`/`, async (req, res) => {
 });
 
 offersRouter.get(`/:offerId`, async (req, res) => {
-  try {
-    const offer = (await getOffers()).find((el) => el.id === res.params.offerId);
-    res.json(offer);
-  } catch {
-    if (!offer) {
-      res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-      console.log(chalk.red(`bed request`));
-      return;
-  }}
+  const offer = (await getOffers()).find((it) => it.id === req.params.offerId);
+  if (!offer) {
+    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+    console.log(chalk.red(`bed request`));
+    return;
+  }
+  res.json(offer);
 });
 
-offersRouter.post(`/`, async(req, res) => {
-  const newOffer = [
+offersRouter.post(`/`, async (req, res) => {
+  const offerKeys = [
     `id`,
     `type`,
     `title`,
@@ -44,61 +42,51 @@ offersRouter.post(`/`, async(req, res) => {
     `sum`,
     `picture`,
     `category`,
-    `comments`,
+    `comments`
   ];
-
-  for (const key of newOffer) {
-    if (!req.body[key]) {
+  for (const key of offerKeys) {
+    if (!req.body [key]) {
       res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
     }
   }
-  res.json({response: `Created new offer`, data: req.body});
+  res.json({response: `New offer!`, data: req.body});
 });
 
-offersRouter.delete(`/:offers/:offerId`, async(req, res) => {
-  try {
-    const offer = (await getOffers().find((el) => el.id === req.params.offerId));
-    res.json({response: `Delete offer by id: ${offer.id}`});
-  } catch {
-    if (!offer) {
-      res.status(HttpCode.NO_CONTENT).send(`NO_CONTENT`);
-      console.log(chalk.red(`Creative not found or has been removed before`));
-    }
+offersRouter.delete(`/:offers/:offerId`, async (req, res) => {
+  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
+  if (!offer) {
+    res.status(HttpCode.NO_CONTENT).send(`NO_CONTENT`);
+    console.log(chalk.red(`Creative not found or has been removed before`));
   }
+  res.json({response: `Delete offer by id: ${offer.id}`});
 });
 
-offersRouter.get(`/:offerId/comments`, async(req, res) => {
-  try {
-    const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
-    res.json(offer.comments);
-  } catch {
-      if (!offer) {
-        res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-      }
+offersRouter.get(`/:offerId/comments`, async (req, res) => {
+  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
+  if (!offer) {
+    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
   }
+  res.json(offer.comments);
 });
 
-offersRouter.delete(`/:offerId/comments/:commentId`, async(req, res) => {
-  try {
-    const {offerId, commentId} = req.params;
-    const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
-    const comment = offer.comments.find((el) => el.id === commentId);
-    res.json({response: `Delete comment ${comment.id}!`});
-  } catch {
-      if ((!offer) || (!comment)) {
-        res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-        console.log(chalk.red(`Bed request`));
-      }
+offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
+  const {offerId, commentId} = req.params;
+  const offer = (await getOffers()).find((el) => el.id === offerId);
+  const comment = offer.comments.find((el) => el.id === commentId);
+  if ((!offer) || (!comment)) {
+    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+    console.log(chalk.red(`Bed request`));
   }
+  res.json({response: `Delete comment ${comment.id}!`});
 });
 
-offersRouter.put(`/:offerId/comment`, async(req, res) => {
-    const {id, text} = req.body;
-    if (!id || (!text && text.length<20)) {
-      res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-      console.log(chalk.red(`Bed request`));
-    }
-    res.json({response: `Created comment`, data: req.body});
+offersRouter.put(`/:offerId/comments`, async (req, res) => {
+  const {id, text} = req.body;
+  if (!id || !text) {
+    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+    console.log(chalk.red(`Bed request`));
+  }
+  res.json({response: `Create comment!`, data: req.body});
 });
 
 module.exports = offersRouter;
