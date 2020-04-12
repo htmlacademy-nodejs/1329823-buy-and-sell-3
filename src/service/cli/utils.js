@@ -1,5 +1,7 @@
 'use strict';
 
+const nanoId = require(`nanoid`);
+
 const getReandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.ceil(max);
@@ -14,7 +16,12 @@ const shuffle = (array) => {
   return array;
 };
 
+const getNewId = () => {
+  return nanoId(6);
+};
+
 module.exports = {
   getReandomInt,
   shuffle,
+  getNewId,
 };
