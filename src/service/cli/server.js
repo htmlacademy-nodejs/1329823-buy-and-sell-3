@@ -1,20 +1,18 @@
 'use strict';
 
-const chalk = require(`chalk`);
-const express = require(`express`);
-const initRoutes = require(`../routes/index`);
+const appRouter = require(`../routes/index`);
+const logger = require(`../logs/logger`);
 
-const DEFAULT_PORT = 3000;
-const app = express();
+const DEFAULT_PORT = 8080;
 
 module.exports = {
   name: `--server`,
-  run(args) {
-    const [customPort] = args;
-    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
-
-    app.use(initRoutes);
-    return app.listen(port,
-        () => console.log(chalk.green(`Server srarted on port ${port}`)));
+  run() {
+    const envPort = process.env.PORT;
+    appRouter.listen(envPort ? envPort.trim() : DEFAULT_PORT, () => {
+      logger.info(`Запуск сервера`);
+    }).on(`error`, (err) => {
+      logger.error(`Server can't start. Error: ${err}`);
+    });
   },
 };

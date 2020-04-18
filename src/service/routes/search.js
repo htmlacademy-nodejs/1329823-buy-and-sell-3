@@ -5,11 +5,14 @@ const {MOCK_FILE_NAME} = require(`../../constants`);
 const {Router} = require(`express`);
 const searchRouter = new Router();
 
+const logger = require(`../logs/logger`).getLogger();
 const getMockFile = async () => JSON.parse((await fs.readFile(MOCK_FILE_NAME)).toString());
 
 searchRouter.get(`/`, async (req, res) =>{
   res.json((await getMockFile()).filter((el) =>
     el.title.match(new RegExp(req.query.query, `gi`))));
+  logger.info(`Status code ${res.statusCode}`);
+  return;
 });
 
 module.exports = searchRouter;
