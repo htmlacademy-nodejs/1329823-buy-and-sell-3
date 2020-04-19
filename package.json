@@ -7,7 +7,7 @@
     "start": "set LOG_LEVEL=error && npm run server > src/service/logs/info.log 2> src/service/logs/error.log",
     "start::debug": "set LOG_LEVEL=debug && npm run server | pino-pretty > src/service/logs/app.log 2> src/service/logs/error.log",
     "server": "nodemon ./src/service/service.js",
-    "test": "npm run test::eslint && npm run test::rest",
+    "test": "npm run test::rest",
     "test::rest": "jest",
     "test::eslint": "npm run eslint",
     "start-front-server": "nodemon ./src/express/index.js",
