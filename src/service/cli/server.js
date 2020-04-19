@@ -1,7 +1,7 @@
 'use strict';
 
 const appRouter = require(`../routes/index`);
-const logger = require(`../logs/logger`);
+const logger = require(`../logger`);
 
 const DEFAULT_PORT = 8080;
 

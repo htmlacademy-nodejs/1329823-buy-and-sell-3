@@ -7,7 +7,7 @@ const offersRouter = new Router();
 
 const {MOCK_FILE_NAME} = require(`../../constants`);
 const getOffers = async () => JSON.parse((await fs.readFile(MOCK_FILE_NAME)).toString());
-const logger = require(`../logs/logger`).getLogger();
+const logger = require(`../logger`).getLogger();
 
 offersRouter.get(`/`, async (req, res) => {
   try {
