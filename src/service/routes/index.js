@@ -8,7 +8,7 @@ const categoryRouter = require(`./categories`);
 const searchRouter = require(`./search`);
 const {HttpCode} = require(`../../constants`);
 
-const logger = require(`../logger`);
+const {logger} = require(`../logger`);
 
 app.use(express.json());
 

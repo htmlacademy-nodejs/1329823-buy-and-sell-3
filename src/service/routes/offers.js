@@ -59,7 +59,7 @@ offersRouter.post(`/`, async (req, res) => {
   return;
 });
 
-offersRouter.delete(`/:offers/:offerId`, async (req, res) => {
+offersRouter.delete(`/:offerId`, async (req, res) => {
   const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
   if (!offer) {
     res.status(HttpCode.NO_CONTENT).send(`NO_CONTENT`);
@@ -86,8 +86,13 @@ offersRouter.get(`/:offerId/comments`, async (req, res) => {
 offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
   const {offerId, commentId} = req.params;
   const offer = (await getOffers()).find((el) => el.id === offerId);
+  if (!offer) {
+    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+    logger.info(`Status code ${res.statusCode}`);
+    return;
+  }
   const comment = offer.comments.find((el) => el.id === commentId);
-  if ((!offer) || (!comment)) {
+  if (!comment) {
     res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
     logger.info(`Status code ${res.statusCode}`);
     return;
@@ -98,6 +103,13 @@ offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
 });
 
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
+  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
+  if (!offer) {
+    res.sendStatus(400);
+    logger.info(`Status code ${res.statusCode}`);
+    return;
+  }
+
   const {id, text} = req.body;
   if (!id || !text) {
     res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);

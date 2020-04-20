@@ -1,16 +1,16 @@
 'use strict';
 
 const appRouter = require(`../routes/index`);
-const logger = require(`../logger`);
+const {logger} = require(`../logger`);
 
-const DEFAULT_PORT = 8080;
+const DEFAULT_PORT = 3000;
 
 module.exports = {
   name: `--server`,
   run() {
     const envPort = process.env.PORT;
     appRouter.listen(envPort ? envPort.trim() : DEFAULT_PORT, () => {
-      logger.info(`Запуск сервера`);
+      logger.info(`Run server on port ${DEFAULT_PORT}`);
     }).on(`error`, (err) => {
       logger.error(`Server can't start. Error: ${err}`);
     });

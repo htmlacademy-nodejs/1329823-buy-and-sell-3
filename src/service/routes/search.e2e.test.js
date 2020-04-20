@@ -6,7 +6,7 @@ const server = require(`./index`);
 const {MOCK_FILE_NAME} = require(`../../constants`);
 
 describe(`Check REST API to work with search`, () => {
-  const mockOffer = null;
+  let mockOffer = null;
   beforeAll(async () => {
     mockOffer = JSON.parse((await fs.readFile(MOCK_FILE_NAME)).toString())[0];
   });
