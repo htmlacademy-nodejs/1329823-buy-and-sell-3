@@ -17,4 +17,5 @@ build/
 #Файл mocks.json, созданный программой
 mocks.json
 
-
+# Папка с логами программы
+src/service/logs

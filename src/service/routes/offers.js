@@ -1,25 +1,28 @@
 'use strict';
 
 const fs = require(`fs`).promises;
-const chalk = require(`chalk`);
 const {HttpCode} = require(`../../constants`);
 const {Router} = require(`express`);
 const offersRouter = new Router();
 
 const {MOCK_FILE_NAME} = require(`../../constants`);
 const getOffers = async () => JSON.parse((await fs.readFile(MOCK_FILE_NAME)).toString());
+const logger = require(`../logger`).getLogger();
 
 offersRouter.get(`/`, async (req, res) => {
   try {
     res.json(await getOffers());
+    logger.info(`Status code ${res.statusCode}`);
+    return;
   } catch (err) {
     if (err.code === `ENOENT`) {
       res.status(HttpCode.NOT_FOUND).send([]);
-      console.log(chalk.red(`Not found file`));
+      logger.error(`Error: ${err}`);
       return;
     }
     res.status(HttpCode.INTERNAL_SERVER_ERROR).send(`Server error`);
-    console.error(chalk.red(err));
+    logger.error(`Error: ${err}`);
+    return;
   }
 });
 
@@ -27,7 +30,7 @@ offersRouter.get(`/:offerId`, async (req, res) => {
   const offer = (await getOffers()).find((it) => it.id === req.params.offerId);
   if (!offer) {
     res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    console.log(chalk.red(`bed request`));
+    logger.info(`Status code ${res.statusCode}`);
     return;
   }
   res.json(offer);
@@ -47,46 +50,75 @@ offersRouter.post(`/`, async (req, res) => {
   for (const key of offerKeys) {
     if (!req.body [key]) {
       res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+      logger.info(`Status code ${res.statusCode}`);
+      return;
     }
   }
   res.json({response: `New offer!`, data: req.body});
+  logger.info(`Status code ${res.statusCode}`);
+  return;
 });
 
-offersRouter.delete(`/:offers/:offerId`, async (req, res) => {
+offersRouter.delete(`/:offerId`, async (req, res) => {
   const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
   if (!offer) {
     res.status(HttpCode.NO_CONTENT).send(`NO_CONTENT`);
-    console.log(chalk.red(`Creative not found or has been removed before`));
+    logger.info(`Status code ${res.statusCode}`);
+    return;
   }
   res.json({response: `Delete offer by id: ${offer.id}`});
+  logger.info(`Status code ${res.statusCode}`);
+  return;
 });
 
 offersRouter.get(`/:offerId/comments`, async (req, res) => {
   const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
   if (!offer) {
     res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+    logger.info(`Status code ${res.statusCode}`);
+    return;
   }
   res.json(offer.comments);
+  logger.info(`Status code ${res.statusCode}`);
+  return;
 });
 
 offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
   const {offerId, commentId} = req.params;
   const offer = (await getOffers()).find((el) => el.id === offerId);
-  const comment = offer.comments.find((el) => el.id === commentId);
-  if ((!offer) || (!comment)) {
+  if (!offer) {
     res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    console.log(chalk.red(`Bed request`));
+    logger.info(`Status code ${res.statusCode}`);
+    return;
+  }
+  const comment = offer.comments.find((el) => el.id === commentId);
+  if (!comment) {
+    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
+    logger.info(`Status code ${res.statusCode}`);
+    return;
   }
   res.json({response: `Delete comment ${comment.id}!`});
+  logger.info(`Status code ${res.statusCode}`);
+  return;
 });
 
 offersRouter.put(`/:offerId/comments`, async (req, res) => {
+  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
+  if (!offer) {
+    res.sendStatus(400);
+    logger.info(`Status code ${res.statusCode}`);
+    return;
+  }
+
   const {id, text} = req.body;
   if (!id || !text) {
     res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    console.log(chalk.red(`Bed request`));
+    logger.info(`Status code ${res.statusCode}`);
+    return;
   }
   res.json({response: `Create comment!`, data: req.body});
+  logger.info(`Status code ${res.statusCode}`);
+  return;
 });
 
 module.exports = offersRouter;
