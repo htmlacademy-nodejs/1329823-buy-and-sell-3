@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/Liz-Che/1329823-buy-and-sell-3#readme",
   "devDependencies": {
+    "axios": "0.19.2",
     "eslint": "6.8.0",
     "eslint-config-htmlacademy": "0.5.2",
     "jest": "25.3.0",
@@ -31,12 +32,14 @@
     "nodemon": "2.0.2",
     "pino-pretty": "3.6.1",
     "pug-lint": "2.6.0",
+    "request": "2.88.2",
     "supertest": "4.0.2",
     "test": "0.6.0"
   },
   "dependencies": {
     "chalk": "3.0.0",
     "express": "4.17.1",
+    "multer": "1.4.2",
     "pino": "6.2.0",
     "pug": "2.0.4"
   }
