@@ -19,3 +19,4 @@ mocks.json
 
 # Папка с логами программы
 src/service/logs
+src/tmp/**/*
