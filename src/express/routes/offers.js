@@ -20,12 +20,12 @@ const multerStrorage = multer.diskStorage({
 offersRouter.get(`/add`, async (req, res) => {
   let categories = [];
   try {
-    categories = (await axios.get(getUrlRequest(req, `/api/categories`))).data;
+    categories = (await axios.get(getUrlRequest(req, `../../service/routes/categories`))).data;
   } catch (err) {
     logger.error(`Error getting categories`);
     return;
   }
-  res.render(`new-ticket`, {categories, offer: {}});
+  res.render(`ticket/new-ticket`, {categories, offer: {}});
   logger.info(`Status code ${res.statusCode}`);
   return;
 });
@@ -40,7 +40,7 @@ offersRouter.post(`/add`, multer({storage: multerStrorage}).single(`avatar`), as
       sum: body.price,
       type: body.action,
     };
-    await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify(offer), {
+    await axios.post(getUrlRequest(req, `../../service/routes/offers`), JSON.stringify(offer), {
       headers: {
         'Content-Type': `application/json`
       }
@@ -51,7 +51,7 @@ offersRouter.post(`/add`, multer({storage: multerStrorage}).single(`avatar`), as
   } catch (err) {
     logger.error(`Error creating new offer`);
   }
-  res.render(`new-ticket`, {
+  res.render(`ticket/new-ticket`, {
     offer: {
       title: body[`ticket-name`] || ``,
       description: body.comment || ``,
@@ -65,27 +65,25 @@ offersRouter.post(`/add`, multer({storage: multerStrorage}).single(`avatar`), as
 });
 
 offersRouter.get(`/:id`, (req, res) => {
-  res.render(`ticket`);
+  res.render(`ticket/ticket`);
   logger.info(`Status code ${res.statusCode}`);
   return;
 });
-
-//offersRouter.get(`/category/:id`, (req, res) => res.render(`main/category`));
 
 offersRouter.get(`/edit/:id`, async (req, res) => {
   let offer = {};
   let categories = [];
   try {
-    offer = (await axios.get(getUrlRequest(req, `/api/offers/${req.params.id}`))).data;
+    offer = (await axios.get(getUrlRequest(req, `../../service/routes/offers/${req.params.id}`))).data;
   } catch (err) {
     logger.error(`Error getting offers`);
   }
   try {
-    categories = (await axios.get(getUrlRequest(req, `/api/categories`))).data;
+    categories = (await axios.get(getUrlRequest(req, `../../service/routes/categories`))).data;
   } catch (err) {
     logger.error(`Error getting list categories`);
   }
-  res.render(`ticket-edit`, {offer, categories});
+  res.render(`ticket/ticket-edit`, {offer, categories});
   logger.info(`Status code ${res.statusCode}`);
   return;
 });

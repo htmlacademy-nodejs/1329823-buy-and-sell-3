@@ -1,6 +1,6 @@
 'use strict';
 
-const express = require(`express`).Router;
+const express = require(`express`);
 const router = require(`./routes/index`);
 const {HttpCode} = require(`../constants`);
 const path = require(`path`);

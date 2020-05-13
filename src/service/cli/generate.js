@@ -33,7 +33,7 @@ const getComments = (count, comments) => {
   }));
 };
 
-const getPicFileName = (number) => `item${number < 10 ? `0${number}` : number}.jpg}`;
+const getPicFileName = (number) => `item${number < 10 ? `0${number}` : number}.jpg`;
 
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => (

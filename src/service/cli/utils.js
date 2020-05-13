@@ -20,7 +20,9 @@ const getNewId = () => {
   return nanoId(6);
 };
 
-const getUrlRequest = (req, path) => new URL(path, `http://${(`` + req.headers.host)}`).href;
+const getUrlRequest = (req, path) => {
+  return new URL(path, `http://localhost:3000`).href;
+};
 
 module.exports = {
   getReandomInt,
