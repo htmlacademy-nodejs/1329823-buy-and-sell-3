@@ -3,7 +3,7 @@
 const { ExitCode, MOCK_FILE_NAME } = require(`../../constants`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const { getReandomInt, shuffle, getNewId} = require(`./utils`);
+const { getReandomInt, shuffle, getNewId} = require(`../../utils`);
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;

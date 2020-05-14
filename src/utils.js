@@ -21,7 +21,7 @@ const getNewId = () => {
 };
 
 const getUrlRequest = (req, path) => {
-  return new URL(path, `http://localhost:3000`).href;
+  return new URL(path, `http://localhost:8080`).href;
 };
 
 module.exports = {

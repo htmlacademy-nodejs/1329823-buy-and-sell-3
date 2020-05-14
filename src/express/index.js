@@ -21,7 +21,9 @@ app.use((req, res, next) => {
   logger.debug(`Router request: ${req.url}`);
   next();
 });
+
 app.use(router);
+
 app.use((req, res) => {
   res.status(HttpCode.NOT_FOUND).send(`Not found page`);
   logger.error(`End request ${req.url} with error: ${res.statusCode}`);

@@ -4,14 +4,16 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const {logger} = require(`../../service/logger`);
 const axios = require(`axios`);
-const {getUrlRequest} = require(`../../service/cli/utils`);
+const {getUrlRequest} = require(`../../utils`);
+const {HttpCode} = require(`../../constants`);
 
 mainRouter.get(`/`, async (req, res) => {
   let offers = [];
   try {
-    offers = (await axios.get(getUrlRequest(req, `../../service/routes/offers`))).data;
+    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data;
   } catch (err) {
-    logger.error(`Error getting list offers, ${err}`);
+    res.status(HttpCode.INTERNAL_SERVER_ERROR).send(`INTERNAL_SERVER_ERROR`);
+    logger.error(`Error getting list offers, ${res.statusCode}`);
     return;
   }
   res.render(`main/main`, {offers});
@@ -34,9 +36,10 @@ mainRouter.get(`/login`, (req, res) => {
 mainRouter.get(`/search`, async (req, res) => {
   let offers = [];
   try {
-    offers = (await axios.get(getUrlRequest(req, `../../service/routes/search/?query=${encodeURIComponent(req.query.search)}`))).data;
+    offers = (await axios.get(getUrlRequest(req, `/api/search/?query=${encodeURIComponent(req.query.search)}`))).data;
   } catch (err) {
-    logger.error(`Error getting list offers`);
+    res.render(`main/search-result-empty`, {offers});
+    logger.error(`Error getting list offers ${err}`);
   }
   res.render(`main/search-result`, {offers});
   logger.info(`Status code ${res.statusCode}`);
