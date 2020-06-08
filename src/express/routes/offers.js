@@ -1,91 +1,74 @@
 'use strict';
 
 const {Router} = require(`express`);
-const offersRouter = new Router();
-const logger = require(`../../service/logger`).getLogger();
-const {getUrlRequest} = require(`../../utils`);
-const path = require(`path`);
-const axios = require(`axios`);
+const {validationResult} = require(`express-validator`);
+const {newOfferFormFields} = require(`../form-validator`);
+const {fileUploader} = require(`../file-upload`);
 
-const multer = require(`multer`);
-const multerStrorage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, path.join(__dirname, `../../tmp`));
-  },
-  filename(req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
+const MAX_PICTURE_SIZE = 15 * 1024 * 1024;
+const SIZE_MEGABITE = 1048576;
+const upload = fileUploader.single(`picture`);
 
-offersRouter.get(`/add`, async (req, res) => {
-  let categories = [];
-  try {
-    categories = (await axios.get(getUrlRequest(req, `/api/categories`))).data;
-  } catch (err) {
-    logger.error(`Error getting categories ${err}`);
-    return;
-  }
-  res.render(`ticket/new-ticket`, {categories, offer: {}});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+const getOffersRouter = (service) => {
+  const offersRouter = new Router();
 
-offersRouter.post(`/add`, multer({storage: multerStrorage}).single(`avatar`), async (req, res) => {
-  const {body} = req;
-  try {
-    const offer = {
-      title: body [`ticket-name`],
-      destination: body.comment,
-      category: body.category,
-      sum: body.price,
-      type: body.action,
-    };
-    await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify(offer), {
-      headers: {
-        'Content-Type': `application/json`
-      }
-    });
-    res.redirect(`/my`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  } catch (err) {
-    logger.error(`Error creating new offer ${err}`);
-  }
-  res.render(`ticket/new-ticket`, {
-    offer: {
-      title: body[`ticket-name`] || ``,
-      description: body.comment || ``,
-      category: body.category || ``,
-      sum: body.price || ``,
-      type: body.action || ``,
-    },
+  offersRouter.get(`/category/:id`, (req, res) => res.render(`main/category`));
+
+  offersRouter.get(`/add`, async (req, res, next) => {
+    try {
+      const categories = await service.getAllCategories();
+      return res.render(`ticket/new-ticket`, {categories});
+    } catch (err) {
+      return next(err);
+    }
   });
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
 
-offersRouter.get(`/:id`, (req, res) => {
-  res.render(`ticket/ticket`);
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  offersRouter.post(`/add`, upload, ...newOfferFormFields, async (req, res, next) => {
+    try {
+      const errorFormat = ({msg}) => ({msg});
+      const errors = validationResult(req).formatWith(errorFormat).array();
+      const file = req.file;
+      let formFieldsData = req.body;
+      if (!file || file.size > SIZE_MEGABITE) {
+        errors.push({
+          msg: `File not selected, invalid format (only jpg/jpeg/png),
+          large file size (max: ${MAX_PICTURE_SIZE / SIZE_MEGABITE} Mb)`
+        });
+      } else {
+        formFieldsData = {
+          ...formFieldsData,
+          picture: {
+            background: `01`,
+            image: file.filename,
+            image2x: file.filename
+          }
+        };
+      }
+      if (Object.keys(errors).length) {
+        const categories = await service.getAllCategories();
+        return res.render(`ticket/new-ticket`, {errors, categories, formFieldsData});
+      }
+      await service.createNewOffer(formFieldsData);
+      return res.redirect(`/my`);
+    } catch (err) {
+      return next(err);
+    }
+  });
 
-offersRouter.get(`/edit/:id`, async (req, res) => {
-  let offer = {};
-  let categories = [];
-  try {
-    offer = (await axios.get(getUrlRequest(req, `/api/offers/${req.params.id}`))).data;
-  } catch (err) {
-    logger.error(`Error getting offers ${err}`);
-  }
-  try {
-    categories = (await axios.get(getUrlRequest(req, `/api/categories`))).data;
-  } catch (err) {
-    logger.error(`Error getting list categories ${err}`);
-  }
-  res.render(`ticket/ticket-edit`, {offer, categories});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  offersRouter.get(`/edit/:id`, async (req, res, next) => {
+    try {
+      const offerId = req.params.id;
+      const offer = await service.getOfferById(offerId);
+      const categories = await service.getAllCategories();
+      return res.render(`ticket/ticket-edit`, {offer, categories});
+    } catch (err) {
+      return next(err);
+    }
+  });
 
-module.exports = offersRouter;
+  offersRouter.get(`/:id`, (req, res) => res.render(`ticket/ticket`));
+  return offersRouter;
+
+};
+
+module.exports = {getOffersRouter};

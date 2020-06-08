@@ -1,12 +1,15 @@
 'use strict';
 
 const express = require(`express`);
-const router = require(`./routes/index`);
 const {HttpCode} = require(`../constants`);
 const path = require(`path`);
 const logger = require(`../service/logger`).getLogger();
-
+const {createAPI} = require(`./axios`);
+const ApiService = require(`./api-service/service`);
+const {getOffersRouter, getMyRouter, getMainRouter} = require(`./routes`);
 const DEFAULT_PORT = 8080;
+
+const service = new ApiService(createAPI());
 const app = express();
 
 const STATIC_DIR = path.join(__dirname, `public`);
@@ -22,10 +25,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(router);
+app.use(`/`, getMainRouter(service));
+app.use(`/my`, getMyRouter(service));
+app.use(`/offers`, getOffersRouter(service));
 
 app.use((req, res) => {
-  res.status(HttpCode.NOT_FOUND).send(`Not found page`);
+  res.status(HttpCode.NOT_FOUND).send(`Not found page`).render(`errors/400`);
   logger.error(`End request ${req.url} with error: ${res.statusCode}`);
 });
 

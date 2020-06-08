@@ -1,33 +1,27 @@
 'use strict';
 
 const {Router} = require(`express`);
-const myRouter = new Router();
-const logger = require(`../../service/logger`);
-const axios = require(`axios`);
-const {getUrlRequest} = require(`../../utils`);
 
-myRouter.get(`/my`, async (req, res) => {
-  let offers = [];
-  try {
-    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data;
-  } catch (err) {
-    logger.error(`Error getting list offers ${err}`);
-  }
-  res.render(`ticket/my-tickets`, {offers});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+const getMyRouter = (service) => {
+  const myRouter = new Router();
+  myRouter.get(`/`, async (req, res, next) => {
+    try {
+      const offers = await service.getAllOffers();
+      return res.render(`ticket/my-tickets`, {offers});
+    } catch (err) {
+      return next(err);
+    }
+  });
 
-myRouter.get(`/my/comments`, async (req, res) => {
-  let offers = [];
-  try {
-    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data.splice(0, 3);
-  } catch (err) {
-    logger.error(`Error getting list offers ${err}`);
-  }
-  res.render(`main/comments`, {offers});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  myRouter.get(`/comments`, async (req, res, next) => {
+    try {
+      const offers = await service.getAllOffers();
+      return res.render(`main/comments`, {offers: offers.slice(0, 3)});
+    } catch (err) {
+      return next(err);
+    }
+  });
+  return myRouter;
+};
 
-module.exports = myRouter;
+module.exports = {getMyRouter};

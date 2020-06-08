@@ -1,124 +1,121 @@
 'use strict';
 
-const fs = require(`fs`).promises;
 const {HttpCode} = require(`../../constants`);
+const offerValidator = require(`../middlewares/offer-validator`);
+const commentValidator = require(`../middlewares/comment-validator`);
 const {Router} = require(`express`);
 const offersRouter = new Router();
-
-const {MOCK_FILE_NAME} = require(`../../constants`);
-const getOffers = async () => JSON.parse((await fs.readFile(MOCK_FILE_NAME)).toString());
 const logger = require(`../logger`).getLogger();
 
-offersRouter.get(`/`, async (req, res) => {
-  try {
-    res.json(await getOffers());
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  } catch (err) {
-    if (err.code === `ENOENT`) {
-      res.status(HttpCode.NOT_FOUND).send([]);
-      logger.error(`Error: ${err}`);
-      return;
+const getOffersRouter = (offerService, commentService) => {
+
+  offersRouter.get(`/`, (req, res) => {
+    const offers = offerService.findAll();
+    return res.status(HttpCode.OK).json(offers);
+  });
+
+  offersRouter.get(`/:offerId`, (req, res) => {
+    const {offerId} = req.params;
+    const offer = offerService.findOne(offerId);
+    if (!offer) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Offer with id: ${offerId} is not found`
+        });
     }
-    res.status(HttpCode.INTERNAL_SERVER_ERROR).send(`Server error`);
-    logger.error(`Error: ${err}`);
-    return;
-  }
-});
+    return res.status(HttpCode.OK).json(offer);
+  });
 
-offersRouter.get(`/:offerId`, async (req, res) => {
-  const offer = (await getOffers()).find((it) => it.id === req.params.offerId);
-  if (!offer) {
-    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
-  res.json(offer);
-});
+  offersRouter.post(`/`, offerValidator, (req, res) => {
+    const offer = offerService.create(req.body);
+    return res.status(HttpCode.CREATED).json(offer);
+  });
 
-offersRouter.post(`/`, async (req, res) => {
-  const offerKeys = [
-    `id`,
-    `type`,
-    `title`,
-    `description`,
-    `sum`,
-    `picture`,
-    `category`,
-    `comments`
-  ];
-  for (const key of offerKeys) {
-    if (!req.body [key]) {
-      res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-      logger.info(`Status code ${res.statusCode}`);
-      return;
+  offersRouter.put(`/:offerId`, offerValidator, (req, res) => {
+    const {offerId} = req.params;
+    const isOfferExists = offerService.findOne(offerId);
+    if (!isOfferExists) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Offer with id: ${offerId} is not found`
+        });
     }
-  }
-  res.json({response: `New offer!`, data: req.body});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+    const updatedOffer = offerService.update(offerId, req.body);
+    return res.status(HttpCode.OK).json(updatedOffer);
+  });
 
-offersRouter.delete(`/:offerId`, async (req, res) => {
-  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
-  if (!offer) {
-    res.status(HttpCode.NO_CONTENT).send(`NO_CONTENT`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
-  res.json({response: `Delete offer by id: ${offer.id}`});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  offersRouter.delete(`/:offerId`, (req, res) => {
+    const {offerId} = req.params;
+    const offer = offerService.drop(offerId);
+    if (!offer) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Offer with id: ${offerId} is not found`
+        });
+    }
+    return res.status(HttpCode.OK).json(offer);
+  });
 
-offersRouter.get(`/:offerId/comments`, async (req, res) => {
-  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
-  if (!offer) {
-    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
-  res.json(offer.comments);
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  offersRouter.get(`/:offerId/comments`, (req, res) => {
+    const {offerId} = req.params;
+    const offer = offerService.findOne(offerId);
+    if (!offer) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Offer with id: ${offerId} is not found`
+        });
+    }
+    const comments = commentService.findAll(offer);
+    return res.status(HttpCode.OK).json(comments);
+  });
 
-offersRouter.delete(`/:offerId/comments/:commentId`, async (req, res) => {
-  const {offerId, commentId} = req.params;
-  const offer = (await getOffers()).find((el) => el.id === offerId);
-  if (!offer) {
-    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
-  const comment = offer.comments.find((el) => el.id === commentId);
-  if (!comment) {
-    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
-  res.json({response: `Delete comment ${comment.id}!`});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  offersRouter.delete(`/:offerId/comments/:commentId`, (req, res) => {
+    const {offerId, commentId} = req.params;
+    const offer = offerService.findOne(offerId);
+    if (!offer) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Offer with id: ${offerId} is not found`
+        });
+    }
+    const deletedComment = commentService.drop(offer, commentId);
+    if (!deletedComment) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Comment with id: ${commentId} is not found`
+        });
+    }
+    return res.status(HttpCode.OK).json(deletedComment);
+  });
 
-offersRouter.put(`/:offerId/comments`, async (req, res) => {
-  const offer = (await getOffers()).find((el) => el.id === req.params.offerId);
-  if (!offer) {
-    res.sendStatus(400);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
+  offersRouter.post(`/:offerId/comments`, commentValidator, (req, res) => {
+    const {offerId} = req.params;
+    const offer = offerService.findOne(offerId);
+    if (!offer) {
+      return res.status(HttpCode.NOT_FOUND)
+        .json({
+          error: true,
+          status: HttpCode.NOT_FOUND,
+          message: `Offer with id: ${offerId} is not found`
+        });
+    }
+    const comment = commentService.create(offer, req.body);
+    return res.status(HttpCode.CREATED).json(comment);
+  });
 
-  const {id, text} = req.body;
-  if (!id || !text) {
-    res.status(HttpCode.BED_REQUEST).send(`BED_REQUEST`);
-    logger.info(`Status code ${res.statusCode}`);
-    return;
-  }
-  res.json({response: `Create comment!`, data: req.body});
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+  return offersRouter;
+};
 
-module.exports = offersRouter;
+module.exports = {getOffersRouter};
