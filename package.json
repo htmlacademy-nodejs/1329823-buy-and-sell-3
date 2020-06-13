@@ -4,7 +4,7 @@
   "description": "\"Куплю. Продам\"",
   "main": "./src/service/service.js",
   "scripts": {
-    "start": "set LOG_LEVEL=error && npm run server > src/service/logs/info.log 2> src/service/logs/error.log",
+    "start": "set LOG_LEVEL=Error && npm run server > src/service/logs/info.log > src/service/logs/error.log",
     "start::debug": "set LOG_LEVEL=debug && npm run server | pino-pretty > src/service/logs/app.log 2> src/service/logs/error.log",
     "server": "nodemon ./src/service/service.js --server 3000",
     "test": "npm run test::rest",
@@ -12,7 +12,7 @@
     "test::eslint": "npm run eslint",
     "start-front-server": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
-    "api-server": "concurrently \"npm start\" \"npm run start-front-server\" "
+    "api-server": "concurrently \"npm run server\" \"npm run start-front-server\" "
   },
   "repository": {
     "type": "git",

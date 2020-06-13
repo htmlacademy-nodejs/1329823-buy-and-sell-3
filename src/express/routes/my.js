@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 
 const getMyRouter = (service) => {
   const myRouter = new Router();
-  myRouter.get(`/`, async (req, res, next) => {
+  myRouter.get(``, async (req, res, next) => {
     try {
       const offers = await service.getAllOffers();
       return res.render(`ticket/my-tickets`, {offers});
@@ -18,6 +18,7 @@ const getMyRouter = (service) => {
       const offers = await service.getAllOffers();
       return res.render(`main/comments`, {offers: offers.slice(0, 3)});
     } catch (err) {
+      console.log(err);
       return next(err);
     }
   });

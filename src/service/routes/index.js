@@ -1,7 +1,7 @@
 'use strict';
 
-const {getCategoryRouter} = require(`./category`);
-const {getOffersRouter} = require(`./offer`);
+const {getCategoryRouter} = require(`./categories`);
+const {getOffersRouter} = require(`./offers`);
 const {getSearchRouter} = require(`./search`);
 
 module.exports = {

@@ -9,7 +9,7 @@ const getMainRouter = (service) => {
     try {
       const offers = await service.getAllOffers();
       const categories = await service.getAllCategories();
-      return res.render(`main`, {
+      return res.render(`main/main`, {
         offers: offers.slice(0, 8),
         categories,
         mostDiscussedOffers: getMostDiscussedOffers(offers)
@@ -19,7 +19,7 @@ const getMainRouter = (service) => {
     }
   });
 
-  mainRouter.get(`/register`, (req, res) => res.render(`main/sign-up`));
+  mainRouter.get(`/register`, (req, res) => res.render(`main/sing-up`));
   mainRouter.get(`/login`, (req, res) => res.render(`main/login`));
 
   mainRouter.get(`/search`, async (req, res, next) => {
