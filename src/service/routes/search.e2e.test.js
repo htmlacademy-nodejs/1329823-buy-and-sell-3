@@ -1,17 +1,27 @@
 'use strict';
 
-const fs = require(`fs`).promises;
 const request = require(`supertest`);
-const server = require(`./index`);
-const {MOCK_FILE_NAME} = require(`../../constants`);
+const {getServer} = require(`../api/api-server`);
+const {getMockData} = require(`../lib/get-mock-data`);
+const {HttpCode} = require(`../../constants`);
+
+let server;
+let mockData;
+
+beforeAll(async () => {
+  server = await getServer();
+  mockData = await getMockData();
+});
 
 describe(`Check REST API to work with search`, () => {
-  let mockOffer = null;
-  beforeAll(async () => {
-    mockOffer = JSON.parse((await fs.readFile(MOCK_FILE_NAME)).toString())[0];
+  test(`Get empty offers array`, async () => {
+    const res = await request(server).get(`/api/search`).query({query: `Offer search test text`});
+    expect(res.statusCode).toBe(HttpCode.OK);
   });
-  test(`Search offers`, async () => {
-    const res = await request(server).get(`/api/search?query=${encodeURIComponent(mockOffer.title)}`);
-    expect(res.statusCode).toBe(200);
+
+  test(`Get search offers array`, async () => {
+    const res = await request(server).get(`/api/search`).query({query: mockData[0].title});
+    expect(res.statusCode).toBe(HttpCode.OK);
   });
+
 });

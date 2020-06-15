@@ -5,7 +5,6 @@ const offerValidator = require(`../middlewares/offer-validator`);
 const commentValidator = require(`../middlewares/comment-validator`);
 const {Router} = require(`express`);
 const offersRouter = new Router();
-const logger = require(`../logger`).getLogger();
 
 const getOffersRouter = (offerService, commentService) => {
 

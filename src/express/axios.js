@@ -4,7 +4,7 @@ const axios = require(`axios`);
 const createAPI = () => {
 
   const api = axios.create({
-    adressURL: `http://localhost:3000/api`,
+    baseURL: `http://localhost:3000/api`,
     timeout: 3000
   });
   const onSuccess = (response) => {
