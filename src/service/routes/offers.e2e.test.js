@@ -29,7 +29,8 @@ const updatedOfferData = {
   title: `TEST`,
   sum: 1000,
   type: `offer`,
-  comments: []
+  comments: [],
+  picture: `item100.jpg`
 };
 
 describe(`Check REST API to work with offers`, () => {
@@ -95,6 +96,24 @@ describe(`Check REST API to work with offers`, () => {
     expect(res.statusCode).toBe(404);
   });
 
+  test(`Update offer`, async () => {
+    const offerId = mockData[0].id;
+    const res = await request(server).put(`/api/offers/${offerId}`).send(updatedOfferData);
+    expect(res.statusCode).toBe(HttpCode.OK);
+  });
+
+  test(`Update offer without data`, async () => {
+    const offerId = mockData[0].id;
+    const res = await request(server).put(`/api/offers/${offerId}`).send({});
+    expect(res.statusCode).toBe(400);
+  });
+
+  test(`Update nonexistent offer`, async () => {
+    const offerId = `000fff`;
+    const res = await request(server).put(`/api/offers/${offerId}`).send(updatedOfferData);
+    expect(res.statusCode).toBe(404);
+  });
+
   test(`Delete offer`, async () => {
     const offerId = mockData[0].id;
     const res = await request(server).delete(`/api/offers/${offerId}`);
@@ -128,24 +147,6 @@ describe(`Check REST API to work with offers`, () => {
     const commentId = `OOOOOO`;
     const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`);
     expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
-  });
-
-  test(`Update offer`, async () => {
-    const offerId = mockData[0].id;
-    const res = await request(server).put(`/api/offers/${offerId}`).send(updatedOfferData);
-    expect(res.statusCode).toBe(HttpCode.OK);
-  });
-
-  test(`Update offer without data`, async () => {
-    const offerId = mockData[0].id;
-    const res = await request(server).put(`/api/offers/${offerId}`).send({});
-    expect(res.statusCode).toBe(400);
-  });
-
-  test(`Update nonexistent offer`, async () => {
-    const offerId = `000fff`;
-    const res = await request(server).put(`/api/offers/${offerId}`).send(updatedOfferData);
-    expect(res.statusCode).toBe(400);
   });
 
 });
