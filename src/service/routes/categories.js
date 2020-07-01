@@ -1,17 +1,18 @@
 'use strict';
 
-const fs = require(`fs`).promises;
-const FILE_CATEGORIES_PATH = `data/categories.txt`;
 const {Router} = require(`express`);
 const categoryRouter = new Router();
-
+const {HttpCode} = require(`../../constants`);
 const logger = require(`../logger`).getLogger();
-const readMocks = async (path) => (await fs.readFile(path)).toString().trim().split(`\n`);
 
-categoryRouter.get(`/`, async (req, res) => {
-  res.json(await readMocks(FILE_CATEGORIES_PATH));
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+const getCategoryRouter = (categoryService) => {
+  categoryRouter.get(`/`, (req, res) => {
+    const categories = categoryService.findAll();
+    res.status(HttpCode.OK).json(categories);
+    logger.info(`Status code ${res.statusCode}`);
+    return;
+  });
+  return categoryRouter;
+};
 
-module.exports = categoryRouter;
+module.exports = {getCategoryRouter};

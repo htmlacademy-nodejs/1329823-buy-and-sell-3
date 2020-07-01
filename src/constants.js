@@ -4,6 +4,7 @@ module.exports = {
   DEFAULT_COMMAND: `--help`,
   USER_ARGV_INDEX: 2,
   MOCK_FILE_NAME: `mocks.json`,
+  API_PREFIX: `/api`,
   ExitCode: {
     error: 1,
     success: 0,
@@ -21,3 +22,5 @@ module.exports.HttpCode = {
   UNAUTHORIZED: 401,
   METOD_NOT_ALLOWED: 405,
 };
+
+

@@ -3,7 +3,7 @@
 const { ExitCode, MOCK_FILE_NAME } = require(`../../constants`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const { getReandomInt, shuffle, getNewId} = require(`./utils`);
+const { getReandomInt, shuffle, getNewId} = require(`../../utils`);
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
@@ -33,7 +33,7 @@ const getComments = (count, comments) => {
   }));
 };
 
-const getPicFileName = (number) => `item${number < 10 ? `0${number}` : number}.jpg}`;
+const getPicFileName = (number) => `item${number < 10 ? `0${number}` : number}.jpg`;
 
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count).fill({}).map(() => (

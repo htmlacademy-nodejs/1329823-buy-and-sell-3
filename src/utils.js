@@ -20,8 +20,18 @@ const getNewId = () => {
   return nanoId(6);
 };
 
+const getUrlRequest = (req, path) => {
+  return new URL(path, `http://localhost:8080`).href;
+};
+
+const getMostDiscussedOffers = (offers) => {
+  return offers.filter((offer) => offer.comments.length > 0).sort((a, b) => b.comments.length - a.comments.length).slice(0, 8);
+};
+
 module.exports = {
   getReandomInt,
   shuffle,
   getNewId,
+  getUrlRequest,
+  getMostDiscussedOffers,
 };

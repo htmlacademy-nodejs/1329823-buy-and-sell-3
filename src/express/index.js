@@ -1,17 +1,41 @@
 'use strict';
 
 const express = require(`express`);
-const chalk = require(`chalk`);
-const router = require(`./routes/index`);
+const {HttpCode} = require(`../constants`);
 const path = require(`path`);
-
+const logger = require(`../service/logger`).getLogger();
+const {createAPI} = require(`./axios`);
+const ApiService = require(`./api-service/service`);
+const {getOffersRouter, getMyRouter, getMainRouter} = require(`./routes`);
 const DEFAULT_PORT = 8080;
+
+const service = new ApiService(createAPI());
 const app = express();
 
-app.use(express.static(`markup`));
-app.set(`views`, path.join(__dirname, `templates`));
-app.set(`view engine`, `pug`);
+const STATIC_DIR = path.join(__dirname, `public`);
 
-app.use(router);
-app.listen(DEFAULT_PORT,
-    () => console.log(chalk.green(`Server of start: ${DEFAULT_PORT}`)));
+app.set(`view engine`, `pug`);
+app.set(`views`, path.join(__dirname, `templates`));
+
+app.use(express.static(STATIC_DIR));
+app.use(express.json());
+
+app.use((req, res, next) => {
+  logger.debug(`Router request: ${req.url}`);
+  next();
+});
+
+app.use(`/`, getMainRouter(service));
+app.use(`/my`, getMyRouter(service));
+app.use(`/offers`, getOffersRouter(service));
+
+app.use((req, res) => {
+  res.status(HttpCode.NOT_FOUND).send(`Not found page`).render(`errors/400`);
+  logger.error(`End request ${req.url} with error: ${res.statusCode}`);
+});
+
+app.listen(DEFAULT_PORT, () => {
+  logger.info(`Run server on port ${DEFAULT_PORT}`);
+}).on(`error`, (err) => {
+  logger.error(`Server can't start. Error: ${err}`);
+});
