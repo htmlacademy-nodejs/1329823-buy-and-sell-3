@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  class OfferToCategory extends sequelize.Sequelize.Model { }
-  OfferToCategory.init({
+  class OffersToCategory extends sequelize.Sequelize.Model { }
+  OffersToCategory.init({
     offerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -17,5 +17,5 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: true,
   });
 
-  return OfferToCategory;
+  return OffersToCategory;
 };
