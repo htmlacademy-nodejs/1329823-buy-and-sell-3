@@ -1,7 +1,6 @@
 'use strict';
 
 const Sequelize = require(`sequelize`);
-const Operator = Sequelize.Op;
 const {getLogger} = require(`./logger`);
 const logger = getLogger();
 const {ExitCode} = require(`../constants`);
@@ -16,13 +15,7 @@ const sequelize = new Sequelize(
     {
       host: `${process.env.DB_HOST}`,
       dialect: `${process.env.DB_DIALECT}`,
-      pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-      },
-      logging: false
+
     }
 );
 const Offer = require(`../../db/models/offer`)(sequelize, Sequelize);
@@ -33,8 +26,8 @@ const Type = require(`../../db/models/type`)(sequelize, Sequelize);
 const User = require(`../../db/models/user`)(sequelize, Sequelize);
 
 // Связь между таблицами types и offers
-Offer.belongsTo(Type, {
-  as: `types`,
+Type.hasMany(Offer, {
+  as: `offers`,
   foreignKey: `typeId`,
 });
 // Связь между таблицами users и offers
@@ -57,7 +50,7 @@ Offer.hasMany(OffersToCategory, {
   as: `offersToCategories`,
   foreignKey: `offerId`,
 });
-// Связь между таблицами offers и offersToCategories
+// Связь между таблицами categories и offersToCategories
 Category.hasMany(OffersToCategory, {
   as: `offersToCategories`,
   foreignKey: `categoryId`,
