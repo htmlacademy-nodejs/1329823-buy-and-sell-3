@@ -1,43 +1,68 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
-  class Offer extends sequelize.Sequelize.Model { }
-  Offer.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-    title: {
-      type: DataTypes.STRING(150),
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.STRING(1000),
-      allowNull: false,
-    },
-    sum: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    picture: {
-      type: DataTypes.STRING(1000),
-      allowNull: false,
-    },
-    typeId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    timestamps: true,
-    paranoid: true,
-  });
+const Sequelize = require(`sequelize`);
 
-  return Offer;
-};
+class Offer extends Sequelize.Model {
+  static init(sequelize, DataTypes) {
+    return super.init({
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      sum: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      picture: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+    }, {
+      sequelize,
+      tableName: `offers`,
+      timestamps: false
+    });
+  }
+
+  static associate(models) {
+    this.offersUsers = this.belongsTo(models.User, {
+      as: `users`,
+      foreignKey: `userId`,
+    });
+    this.offersComments = this.hasMany(models.Comment, {
+      as: `comments`,
+      foreignKey: `offerId`
+    });
+    this.offersToCategories = this.belongsToMany(models.Category, {
+      through: `offersToCategories`,
+      as: `categories`,
+      foreignKey: `offerId`,
+      timestamps: false,
+      paranoid: false
+    });
+  }
+}
+
+module.exports = Offer;

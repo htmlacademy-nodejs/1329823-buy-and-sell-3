@@ -5,7 +5,7 @@ const {Router} = require(`express`);
 const searchRouter = new Router();
 
 const getSearchRouter = (searchService) => {
-  searchRouter.get(`/`, (req, res) => {
+  searchRouter.get(`/`, async (req, res) => {
     const {query} = req.query;
     if (typeof (query) === `undefined`) {
       return res.status(HttpCode.BAD_REQUEST)
@@ -15,9 +15,10 @@ const getSearchRouter = (searchService) => {
         message: `Incorrect data sent`
       });
     }
-    const searchResults = searchService.findAll(query);
+    const searchResults = await searchService.findAll(query);
     return res.status(HttpCode.OK).json(searchResults);
   });
+
   return searchRouter;
 };
 

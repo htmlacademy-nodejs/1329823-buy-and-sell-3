@@ -1,31 +1,45 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
-  class Comment extends sequelize.Sequelize.Model { }
-  Comment.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-    offerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    comment: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    timestamps: true,
-    paranoid: true,
-  });
+const Sequelize = require(`sequelize`);
 
-  return Comment;
-};
+class Comment extends Sequelize.Model {
+  static init(sequelize, DataTypes) {
+    return super.init({
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+      },
+      offerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      text: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false
+      }
+    }, {
+      sequelize,
+      tableName: `comments`,
+      timestamps: false
+    });
+  }
+
+  static associate(models) {
+    this.offersComments = this.belongsTo(models.Offer, {
+      as: `offers`,
+      foreignKey: `offerId`
+    });
+    this.usersComments = this.belongsTo(models.User, {
+      as: `users`,
+      foreignKey: `userId`
+    });
+  }
+}
+
+module.exports = Comment;

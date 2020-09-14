@@ -6,7 +6,6 @@ const logger = getLogger();
 const {ExitCode} = require(`../constants`);
 
 require(`dotenv`).config();
-const {types, users, categories, offers, comments, offersToCategories} = require(`../../db/fill-db`);
 
 const sequelize = new Sequelize(
     `${process.env.DB_NAME}`,
@@ -15,56 +14,26 @@ const sequelize = new Sequelize(
     {
       host: `${process.env.DB_HOST}`,
       dialect: `${process.env.DB_DIALECT}`,
-
     }
 );
-const Offer = require(`../../db/models/offer`)(sequelize, Sequelize);
-const OffersToCategory = require(`../../db/models/offer-to-category`)(sequelize, Sequelize);
-const Category = require(`../../db/models/category`)(sequelize, Sequelize);
-const Comment = require(`../../db/models/comment`)(sequelize, Sequelize);
-const Type = require(`../../db/models/type`)(sequelize, Sequelize);
-const User = require(`../../db/models/user`)(sequelize, Sequelize);
+const OfferModel = require(`../../db/models/offer`);
+const CategoryModel = require(`../../db/models/category`);
+const CommentModel = require(`../../db/models/comment`);
+const UserModel = require(`../../db/models/user`);
 
-// Связь между таблицами types и offers
-Type.hasMany(Offer, {
-  as: `offers`,
-  foreignKey: `typeId`,
-});
-// Связь между таблицами users и offers
-User.hasMany(Offer, {
-  as: `offers`,
-  foreignKey: `userId`,
-});
-// Связь между таблицами users и comments
-User.hasMany(Comment, {
-  as: `comments`,
-  foreignKey: `userId`,
-});
-// Связь между таблицами offers и comments
-Offer.hasMany(Comment, {
-  as: `comments`,
-  foreignKey: `offerId`,
-});
-// Связь между таблицами offers и offersToCategories
-Offer.hasMany(OffersToCategory, {
-  as: `offersToCategories`,
-  foreignKey: `offerId`,
-});
-// Связь между таблицами categories и offersToCategories
-Category.hasMany(OffersToCategory, {
-  as: `offersToCategories`,
-  foreignKey: `categoryId`,
-});
+const models = {
+  Offer: OfferModel.init(sequelize, Sequelize),
+  Category: CategoryModel.init(sequelize, Sequelize),
+  Comment: CommentModel.init(sequelize, Sequelize),
+  User: UserModel.init(sequelize, Sequelize)
+};
+
+Object.values(models)
+  .forEach((model) => model.associate(models));
 
 const initDB = async () => {
   await sequelize.sync({force: true});
   console.log(`Структура БД успешно создана`);
-  await Type.bulkCreate(types);
-  await User.bulkCreate(users);
-  await Category.bulkCreate(categories);
-  await Offer.bulkCreate(offers);
-  await OffersToCategory.bulkCreate(offersToCategories);
-  await Comment.bulkCreate(comments);
 };
 
 const connectDB = async () => {
@@ -79,13 +48,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = {connectDB, initDB,
-  db: {
-    Offer,
-    OffersToCategory,
-    Category,
-    Comment,
-    Type,
-    User,
-  },
-};
+module.exports = {connectDB, initDB, sequelize};

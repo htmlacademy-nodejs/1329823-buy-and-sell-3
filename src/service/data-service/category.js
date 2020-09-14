@@ -1,16 +1,35 @@
 'use strict';
 
+const {sequelize} = require(`../db-connect`);
+const {Category} = sequelize.models;
+
 class CategoryService {
-  constructor(offers) {
-    this._offers = offers;
+
+  async findAll() {
+    return await Category.findAll({});
   }
-  findAll() {
-    const categories = this._offers.reduce((categoriesList, offer) => {
-      categoriesList.add(...offer.category);
-      return categoriesList;
-    }, new Set());
-    return [...categories];
+
+  async fildAllWithOffers() {
+    const sql = `SELECT 
+                  categories.id,
+                  categories.title,
+                  count("offersCategories"."categoryId") AS "offersCount
+                FROM categories
+                INNER JOIN "offersCategories"
+                ON "offersCategories"."categoryId" = categories.id
+                GROUP BY 
+                  categories.id,
+                  categories.title
+                ORDER BY
+                  COUNT ("offersCategories"."categoryId") DESC;`;
+    const categories = await sequelize.query(sql, {model: Category});
+    return categories;
   }
+
+  async getCategoryById(categoryId) {
+    return Category.findByPk(categoryId);
+  }
+
 }
 
 module.exports = CategoryService;

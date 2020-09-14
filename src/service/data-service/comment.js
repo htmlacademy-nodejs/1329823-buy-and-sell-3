@@ -1,29 +1,14 @@
 'use strict';
 
-const {getNewId} = require(`../../utils`);
+const {sequelize} = require(`../db-connect`);
+const {Comment} = sequelize.models;
 
 class CommentService {
-  create(offer, comment) {
-    const newComment = Object.assign(
-        {
-          id: getNewId(),
-        },
-        comment
-    );
-    offer.comments.push(newComment);
-    return newComment;
+  async create(commentData) {
+    return await Comment.create(commentData, {rerurning: true});
   }
-
-  drop(offer, commentId) {
-    const dropComment = offer.comments.find((item) => item.id === commentId);
-    if (!dropComment) {
-      return null;
-    }
-    offer.comments = offer.comments.filter((item) => item.id !== commentId);
-    return dropComment;
-  }
-  findAll(offer) {
-    return offer.comments;
+  async delete(commentId) {
+    return await Comment.destroy({where: {id: commentId}});
   }
 }
 

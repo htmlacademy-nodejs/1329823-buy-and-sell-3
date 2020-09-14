@@ -1,23 +1,40 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
-  class Category extends sequelize.Sequelize.Model { }
-  Category.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-    title: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    timestamps: true,
-    paranoid: true,
-  });
+const Sequelize = require(`sequelize`);
 
-  return Category;
-};
+class Category extends Sequelize.Model {
+  static init(sequelize, DataTypes) {
+    return super.init({
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+      }
+    }, {
+      sequelize,
+      tableName: `categories`,
+      timestamps: false
+    });
+  }
+
+  static associate(models) {
+    this.offersToCategories = this.belongsToMany(
+        models.Offer,
+        {
+          through: `offersToCategories`,
+          as: `offers`,
+          foreignKey: `categoryId`,
+          timestamps: false,
+          paranoid: false
+        }
+    );
+  }
+}
+
+module.exports = Category;
