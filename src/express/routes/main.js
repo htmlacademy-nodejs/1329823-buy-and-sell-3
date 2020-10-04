@@ -1,18 +1,17 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {getMostDiscussedOffers} = require(`../../utils`);
 
 const getMainRouter = (service) => {
   const mainRouter = new Router();
   mainRouter.get(`/`, async (req, res, next) => {
     try {
-      const offers = await service.getAllOffers();
-      const categories = await service.getAllCategories();
+      const {offers, mostDiscussedOffers} = await service.getAllOffers();
+      const categories = await service.getAllCategoriesWithOffers();
       return res.render(`main/main`, {
-        offers: offers.slice(0, 8),
+        offers,
         categories,
-        mostDiscussedOffers: getMostDiscussedOffers(offers)
+        mostDiscussedOffers
       });
     } catch (err) {
       return next(err);
@@ -26,10 +25,10 @@ const getMainRouter = (service) => {
     try {
       const {query} = req.query;
       const searchResult = await service.searchOffers(query);
-      const offers = await service.getAllOffers();
+      const {offers} = await service.getAllOffers();
       return res.render(`main/search-result`, {
         offers: searchResult,
-        mostDiscussedOffers: getMostDiscussedOffers(offers)
+        newOffers: offers
       });
     } catch (err) {
       return next(err);

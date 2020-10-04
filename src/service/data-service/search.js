@@ -1,11 +1,22 @@
 'use strict';
 
+const {sequelize} = require(`../db-connect`);
+const {Offer} = sequelize.models;
+const {Op} = require(`sequelize`);
+
 class SearchService {
-  constructor(offers) {
-    this._offers = offers;
-  }
-  findAll(searchText) {
-    return searchText ? this._offers.filter((offer) => offer.title.includes(searchText)) : [];
+
+  async findAll(searchText) {
+    const offers = Offer.findAll({
+      include: [`categories`],
+      where: {
+        title:{
+          [Op.iLike]: `%${searchText}%`
+        }
+      }
+    });
+    return offers;
   }
 }
+
 module.exports = SearchService;

@@ -4,7 +4,6 @@ const express = require(`express`);
 const {getLogger} = require(`../logger`);
 const expressPinoLogger = require(`express-pino-logger`);
 const {HttpCode, API_PREFIX} = require(`../../constants`);
-const {getMockData} = require(`../lib/get-mock-data`);
 const {connectDB} = require(`../db-connect`);
 
 const {getCategoryRouter, getOffersRouter, getSearchRouter} = require(`../routes`);
@@ -13,7 +12,6 @@ const {CategoryService, CommentService, SearchService, OfferService} = require(`
 const getServer = async () => {
   const server = express();
   const logger = getLogger();
-  const mockData = await getMockData();
   await connectDB();
 
   server.disable(`x-powered-by`);
@@ -26,17 +24,18 @@ const getServer = async () => {
   });
 
   server.use(`${API_PREFIX}/categories`,
-      getCategoryRouter(new CategoryService(mockData))
+      getCategoryRouter(new CategoryService())
   );
 
   server.use(`${API_PREFIX}/search`,
-      getSearchRouter(new SearchService(mockData))
+      getSearchRouter(new SearchService())
   );
 
   server.use(`${API_PREFIX}/offers`,
       getOffersRouter(
-          new OfferService(mockData),
-          new CommentService()
+          new OfferService(),
+          new CommentService(),
+          new CategoryService()
       )
   );
 

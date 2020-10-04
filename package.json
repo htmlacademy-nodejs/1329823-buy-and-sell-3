@@ -12,7 +12,8 @@
     "test::eslint": "npm run eslint",
     "start-front-server": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
-    "api-server": "concurrently \"npm run server\" \"npm run start-front-server\" "
+    "api-server": "concurrently \"npm run server\" \"npm run start-front-server\" ",
+    "initdb": "node ./db/init-db.js"
   },
   "repository": {
     "type": "git",

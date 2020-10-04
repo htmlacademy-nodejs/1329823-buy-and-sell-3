@@ -1,8 +1,8 @@
 extends ../layout/layout.pug
 include ../layout/offers-list.pug
-block content
 
-  -var OFFER_LIST = `search`
+block content
+  -var OFFER_LIST_TYPE = `search`
   main.page-content
     section.search-results
       h1.visually-hidden Результаты поиска
@@ -17,11 +17,11 @@ block content
           p.search-results__label
             | Найдено
             span.js-results= ` ${offers.length} публикации(ия)`
-          +offers-list(offers, OFFER_LIST)
+          +offers-list(offers, OFFER_LIST_TYPE)
       section.tickets-list
         h2.visually-hidden Самые новые предложения
         .tickets-list__wrapper
           .tickets-list__header
             p.tickets-list__title Самое свежее
             a.tickets-list__link(href="#") Еще 25
-          +offers-list(mostDiscussedOffers)
+          +offers-list(newOffers)

@@ -22,4 +22,13 @@ const newOfferFormFields = [
   check(`type`, `Select an ad type (buy/ sale)`).notEmpty()
 ];
 
-module.exports = {newOfferFormFields};
+const newCommentFormFields = [
+  check(`text`, `Enter comment`)
+    .trim()
+    .notEmpty()
+    .bail()
+    .isLength({min: 30})
+    .withMessage(`Ad comment must be at least 30 characters`)
+];
+
+module.exports = {newOfferFormFields, newCommentFormFields};
