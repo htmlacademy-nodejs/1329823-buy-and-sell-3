@@ -1,9 +1,7 @@
 'use strict';
 
 const {sequelize} = require(`../db-connect`);
-const offer = require("../../../db/models/offer");
-const { offersToCategories } = require("../../../db/fill-db");
-const {Offer, Comment, Category, User, OffersToCategory} = sequelize.models;
+const {Offer, Comment, Category, offersToCategories, User} = sequelize.models;
 const NEW_OFFER_LIMIT = 8;
 const POPULAR_OFFER_LIMIT = 8;
 
